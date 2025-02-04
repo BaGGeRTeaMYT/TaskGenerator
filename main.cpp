@@ -1,14 +1,12 @@
 #include <iostream>
-#include <fstream>
-#include <cstdlib> // Для функции system()
-#include <windows.h> // Для функции chdir()
-#include <string>
 #include <TaskProcessor.hpp>
+#include <Consumer.hpp>
 
 int main() {
-    TaskProcessor tmp("D:/AlgebraTaskGen/config.txt");
-
-    std::cout << tmp.fill_regex();
+    TaskProcessor tmp(std::string(PROJECT_SOURCE_DIR) + std::string("/config.txt"));
+    Consumer cons(tmp, 50);
+    
+    cons.write_to_file(std::string(PROJECT_SOURCE_DIR) + std::string("/tmp.tex"));
 
     return 0;
 }

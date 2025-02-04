@@ -1,6 +1,6 @@
 #include <RegexFiller.hpp>
 
-std::string RegexFiller::regex_to_string(const std::string& pattern) {
+std::vector<std::string> RegexFiller::regex_to_string(const std::string& pattern, unsigned int n) {
     #ifdef PROJECT_SOURCE_DIR
         std::string project_source_dir = PROJECT_SOURCE_DIR;
     #else
@@ -20,7 +20,7 @@ std::string RegexFiller::regex_to_string(const std::string& pattern) {
     input_file << pattern;
     input_file.close();
 
-    std::string command = "python " + python_script_path + " " + input_file_path + " " + output_file_path;
+    std::string command = "python " + python_script_path + " " + input_file_path + " " + output_file_path + " " + std::to_string(n);
     int result = system(command.c_str());
     if (result != 0) {
         throw std::runtime_error("Error in Python code\n");
@@ -30,9 +30,11 @@ std::string RegexFiller::regex_to_string(const std::string& pattern) {
     if (!output_file) {
         throw std::runtime_error("Unable to open output file to read\n");
     }
-    std::string generated_string;
-    std::getline(output_file, generated_string);
+    std::vector<std::string> res(n);
+    for (int i = 0; i < n; i++) {
+        std::getline(output_file, res[i]);
+    }
     output_file.close();
 
-    return generated_string;
+    return res;
 }

@@ -74,13 +74,18 @@ TaskProcessor::TokenVec TaskProcessor::read_from_file(std::ifstream& file) {
     return res;
 }
 
-std::string TaskProcessor::fill_regex() const {
-    std::string res = "";
+std::vector<std::string> TaskProcessor::fill_regex(unsigned int result_size) const {
+    std::vector<std::string> res(result_size);
     for (auto token : m_str) {
         if (token.is_regex) {
-            res += RegexFiller::regex_to_string(token.buf);
+            std::vector<std::string> regex_res = RegexFiller::regex_to_string(token.buf, result_size);
+            for (int i = 0; i < res.size(); i++) {
+                res[i] += regex_res[i];
+            }
         } else {
-            res += token.buf;
+            for (int i = 0; i < res.size(); i++) {
+                res[i] += token.buf;
+            }
         }
     }
     return res;

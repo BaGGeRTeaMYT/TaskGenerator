@@ -21,7 +21,7 @@ public:
 
     const TokenVec& get_token_vec() const;
 
-    std::string fill_regex() const;
+    std::vector<std::string> fill_regex(unsigned int result_size) const;
 
 private:
     TokenVec read_from_file(std::ifstream& file);

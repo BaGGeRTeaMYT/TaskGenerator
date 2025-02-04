@@ -1,2 +1,2 @@
-This task requires {[1-9][0-9]?} numbers and {[1-9](\.[2-5]{1,2})?} dust particles.
-Testing matrices like \[ \begin\{pmatrix\} {\d} & {\d}\\\\ {\d} & {\d} \end\{pmatrix\} \]\
+This task requires {[1-9][0-9]?} numbers\\\\
+Testing matrices like \[ \begin\{pmatrix\} {\d} & {\d}\\\\ {\d} & {\d} \end\{pmatrix\} \]
