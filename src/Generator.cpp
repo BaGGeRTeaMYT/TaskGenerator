@@ -29,10 +29,11 @@ void Generator::write_to_file(const std::string& file_name) {
     file << "\\documentclass[11pt]{article}\n"
          << "\\usepackage{amsmath, amsfonts, amsthm}\n\\usepackage{nicefrac}\n"
          << "\\usepackage[utf8]{inputenc}\n\\usepackage[T2A]{fontenc}\n\\usepackage[russian]{babel}\n"
+         << "\\usepackage{fontspec}\n\\setmainfont{Times New Roman}\n"
          << "\\begin{document}\n";
 
     for (int i = 0; i < m_last_generated.size(); i++) {
-        file << "\\subsection*{Variant " << i + 1 << "}\n"
+        file << "\\subsection*{Вариант " << i + 1 << "}\n"
              << m_last_generated[i] << "\n";
     }
     file << "\\end{document}\n";
