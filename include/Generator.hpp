@@ -3,9 +3,9 @@
 #include <TaskProcessor.hpp>
 #include <memory>
 
-class Consumer {
+class Generator {
 public:
-    Consumer(const TaskProcessor& processor, unsigned int amount_of_tasks);
+    Generator(const TaskProcessor& processor, unsigned int amount_of_tasks);
 
     void set_amount(unsigned int new_amount);
 

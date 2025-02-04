@@ -1,20 +1,20 @@
-#include <Consumer.hpp>
+#include <Generator.hpp>
 
-Consumer::Consumer(const TaskProcessor& proc, unsigned int n):
+Generator::Generator(const TaskProcessor& proc, unsigned int n):
     m_processor(std::make_unique<TaskProcessor>(proc)),
     m_amount_of_tasks(n) {}
 
-void Consumer::set_amount(unsigned int new_amount) {
+void Generator::set_amount(unsigned int new_amount) {
     m_amount_of_tasks = new_amount;
 }
 
 // TODO: check for repeating tasks
 // TODO: add user to allow some amount of repeatitions
-void Consumer::generate_tasks() {
+void Generator::generate_tasks() {
     m_last_generated = m_processor->fill_regex(m_amount_of_tasks);
 }
 
-void Consumer::write_to_file(const std::string& file_name) {
+void Generator::write_to_file(const std::string& file_name) {
 
     std::ofstream file(file_name);
     if (!file.is_open()) {
@@ -27,7 +27,7 @@ void Consumer::write_to_file(const std::string& file_name) {
     }
 
     file << "\\documentclass[11pt]{article}\n"
-         << "\\usepackage{amsmath, amsfonts, amsthm}\n\\usepackage{nicefrac}"
+         << "\\usepackage{amsmath, amsfonts, amsthm}\n\\usepackage{nicefrac}\n"
          << "\\usepackage[utf8]{inputenc}\n\\usepackage[T2A]{fontenc}\n\\usepackage[russian]{babel}\n"
          << "\\begin{document}\n";
 

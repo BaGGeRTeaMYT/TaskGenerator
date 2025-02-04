@@ -10,7 +10,7 @@ std::vector<std::string> RegexFiller::regex_to_string(const std::string& pattern
     // Полные пути к файлам и скрипту
     std::string input_file_path = project_source_dir + "/input.txt";
     std::string output_file_path = project_source_dir + "/output.txt";
-    std::string python_script_path = project_source_dir + "/string_generator.py";
+    std::string python_script_path = project_source_dir + "/StringGenerator.py";
 
     // Запись регулярного выражения в файл
     std::ofstream input_file(input_file_path);
