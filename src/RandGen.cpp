@@ -18,21 +18,15 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
     char c = regex[pos];
 
     if (c == '\\') {
-      // Обработка экранирования
-      if (pos + 1 >= regex.size()) {
-        throw std::runtime_error("Invalid escape sequence");
-      }
+      if (pos + 1 >= regex.size()) throw std::runtime_error("Invalid escape sequence");
       result += regex[pos + 1];
       pos += 2;
     }
     else if (c == '[') {
-      // Запоминаем позицию начала символьного класса
       size_t start = pos;
       std::string char_class = parse_character_class(regex, pos);
 
-      // Проверяем, есть ли после него повторение
       if (pos < regex.size() && regex[pos] == '{') {
-        // Передаём исходный паттерн (включая [])
         std::string pattern = regex.substr(start, pos - start);
         result += parse_repetition(regex, pos, pattern);
       }
@@ -41,12 +35,8 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
       }
     }
     else if (c == '{') {
-      // Для обычных символов перед { берём последний символ
-      if (result.empty()) {
-        throw std::runtime_error("Nothing to repeat before {}");
-      }
+      if (result.empty()) throw std::runtime_error("Nothing to repeat before {}");
 
-      // Запоминаем позицию начала повторяемого элемента
       size_t pattern_start = pos - 1;
       std::string to_repeat = regex.substr(pattern_start, 1);
       result.pop_back();
@@ -54,7 +44,6 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
       result += parse_repetition(regex, pos, to_repeat);
     }
     else if (c == '?') {
-      // Обработка опционального символа
       if (!result.empty() && (pos == regex.size() - 1 || regex[pos + 1] != '?')) {
         if (get_random_char(0, 1)) {
           pos++;
@@ -70,7 +59,6 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
       }
     }
     else {
-      // Обычный символ
       result += c;
       pos++;
     }
@@ -80,7 +68,7 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
 
 std::string RegexStringGenerator::parse_character_class(const std::string& regex, size_t& pos) {
   std::string chars;
-  pos++;
+  pos++; // Пропускаем '['
 
   bool in_range = false;
   char range_start = 0;
@@ -89,9 +77,7 @@ std::string RegexStringGenerator::parse_character_class(const std::string& regex
     char c = regex[pos];
 
     if (c == '\\') {
-      if (pos + 1 >= regex.size()) {
-        throw std::runtime_error("Invalid escape sequence in character class");
-      }
+      if (pos + 1 >= regex.size()) throw std::runtime_error("Invalid escape sequence in character class");
       chars += regex[pos + 1];
       pos += 2;
     }
@@ -139,9 +125,7 @@ std::string RegexStringGenerator::parse_repetition(const std::string& regex, siz
     char c = regex[pos];
 
     if (c == '-') {
-      if (in_range || num_str.empty()) {
-        throw std::runtime_error("Invalid repetition range");
-      }
+      if (in_range || num_str.empty()) throw std::runtime_error("Invalid repetition range");
       in_range = true;
       min_repeat = std::stoi(num_str);
       num_str.clear();
@@ -159,7 +143,7 @@ std::string RegexStringGenerator::parse_repetition(const std::string& regex, siz
   if (pos >= regex.size() || regex[pos] != '}') {
     throw std::runtime_error("Unclosed repetition");
   }
-  pos++; // Пропускаем '}'
+  pos++;
 
   if (in_range) {
     max_repeat = num_str.empty() ? min_repeat : std::stoi(num_str);
@@ -177,15 +161,12 @@ std::string RegexStringGenerator::parse_repetition(const std::string& regex, siz
 
   std::string result;
   for (int i = 0; i < repeat_count; i++) {
-    // Парсим паттерн заново для каждого повторения
     size_t temp_pos = 0;
     if (pattern[0] == '[') {
-      // Для символьных классов
-      std::string full_pattern = pattern + "]"; // Восстанавливаем закрывающую ]
+      std::string full_pattern = pattern + "]";
       result += parse_character_class(full_pattern, temp_pos);
     }
     else {
-      // Для обычных символов
       result += pattern;
     }
   }

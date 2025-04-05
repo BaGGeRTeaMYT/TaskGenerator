@@ -18,11 +18,13 @@ int main() {
   }
   RegexStringGenerator generator;
 
-  output << "Escape: " << generator.generate("\\[test\\]") << "\n";
-  output << "Range: " << generator.generate("[1-2][0-9]") << "\n";
-  output << "Repetition: " << generator.generate("[a-z]{3}") << "\n";
-  output << "Optional: " << generator.generate("a?b?c?") << "\n";
-  output << "Variable repeat: " << generator.generate("1{0-2}") << "\n";
+  for (int i = 0; i < 100000; i++) {
+    output << "Escape: " << generator.generate("\\[test\\]") << "\n";
+    output << "Range: " << generator.generate("[1-2][0-9]") << "\n";
+    output << "Repetition: " << generator.generate("[a-z]{3}") << "\n";
+    output << "Optional: " << generator.generate("a?b?c?") << "\n";
+    output << "Variable repeat: " << generator.generate("1{0-2}") << "\n";
+  }
 
   return 0;
 }
