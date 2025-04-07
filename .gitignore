@@ -1,5 +1,5 @@
 .vscode
 build
-Dockerfile
 .devcontainer
 test*
+main_out.txt
