@@ -1,8 +1,5 @@
 #include <ParserJSON.hpp>
 
-//TODO: remove
-#include <iostream>
-
 ParserJSON::ParserJSON(const std::string& path) {
   std::ifstream file(path);
   if (!file.is_open()) {
@@ -212,11 +209,6 @@ void ParserJSON::generate_with_condition() {
       total_results &= (*m_checker)[type](m_generated, names_vec);
     }
     satisfied = total_results;
-
-    // TODO: remove
-    if (!satisfied) {
-      std::cout << "Condition were not satisfied" << std::endl;
-    }
   }
 }
 
