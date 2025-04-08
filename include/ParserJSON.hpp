@@ -18,13 +18,14 @@ public:
   std::vector<DataObject> get_generated() const;
 
   std::string to_string() const;
-  void generate_values(bool check_for_conditions = true);
-
-private:
+  void generate_to_file(int amount, const std::string& path);
+  
+  private:
   std::shared_ptr<ConditionChecker> m_checker;
   bool has_solutions;
   RegexStringGenerator m_generator;
-
+  
+  void generate_values(bool check_for_conditions = true);
 
   std::vector<DataObject> m_data;
   std::vector<DataObject> m_generated;

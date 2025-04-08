@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(TaskGenerator)
+project(TaskGenerator LANGUAGES CXX)
 
 include(FetchContent)
 
@@ -10,7 +10,24 @@ FetchContent_Declare(
     GIT_TAG v3.11.3
 )
 
+FetchContent_Declare(
+    imgui-glfw-glad-glm
+    GIT_REPOSITORY https://github.com/cmmw/imgui-glfw-glad-glm.git
+    GIT_TAG master
+)
+
+FetchContent_Declare(
+    nfd
+    GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+    GIT_TAG master
+)
+
 FetchContent_MakeAvailable(nlohmann_json)
+FetchContent_MakeAvailable(imgui-glfw-glad-glm)
+find_package(OpenGL REQUIRED)
+FetchContent_MakeAvailable(nfd)
+
+
 
 file (GLOB SOURCES "src/*.cpp")
 
@@ -18,6 +35,11 @@ add_compile_definitions(PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
 include_directories(include)
 
-add_executable(MAIN main.cpp ${SOURCES})
+add_executable(MAIN main.cpp ${SOURCES} src/UI.cpp)
 
-target_link_libraries(MAIN PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(MAIN PRIVATE
+    nlohmann_json::nlohmann_json
+    imgui
+    glm
+    opengl32
+    nfd)

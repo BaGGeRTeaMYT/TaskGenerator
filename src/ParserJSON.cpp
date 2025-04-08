@@ -5,9 +5,6 @@
 
 using json = nlohmann::json;
 
-std::vector<DataObject> ParserJSON::get_pattern() const { return m_data; }
-
-std::vector<DataObject> ParserJSON::get_generated() const { return m_generated; }
 
 ParserJSON::ParserJSON(const std::string& path) {
   std::ifstream file(path);
@@ -76,12 +73,62 @@ const std::vector<DataObject>& ParserJSON::get_data() const {
   return m_data;
 }
 
+std::vector<DataObject> ParserJSON::get_pattern() const { return m_data; }
+
+std::vector<DataObject> ParserJSON::get_generated() const { return m_generated; }
+
 std::string ParserJSON::to_string() const {
   std::string res = {};
   for (const auto& i : m_generated) {
     res += i.get_value();
   }
   return res;
+}
+
+void ParserJSON::generate_to_file(int amount, const std::string& path) {
+  std::ofstream output(path);
+  output.clear();
+  output <<
+    R"(\documentclass[11pt]{article}
+\usepackage{amsmath, amsfonts, amsthm}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian]{babel}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\begin{document}
+)";
+
+  for (int i = 1; i <= amount; i++) {
+    generate_values();
+    output << "\n\\section*{Вариант "
+      << i
+      << "}\n";
+    output << to_string();
+  }
+
+  output <<
+    R"(\end{document}
+% generated with task generator)";
+}
+
+void ParserJSON::generate_values(bool check) {
+
+  if (check && m_checker) {
+    generate_with_condition();
+    return;
+  }
+
+  m_generated = {};
+
+  for (const auto& obj : m_data) {
+    if (obj.get_type() == DataType::TEXT) {
+      m_generated.push_back(obj);
+    }
+    else {
+      m_generated.emplace_back(DataType::TEXT, m_generator.generate(obj.get_value()), obj.get_name());
+    }
+  }
 }
 
 void ParserJSON::generate_with_condition() {
@@ -106,25 +153,6 @@ void ParserJSON::generate_with_condition() {
     // TODO: remove
     if (!satisfied) {
       std::cout << "Condition were not satisfied" << std::endl;
-    }
-  }
-}
-
-void ParserJSON::generate_values(bool check) {
-
-  if (check && m_checker) {
-    generate_with_condition();
-    return;
-  }
-
-  m_generated = {};
-
-  for (const auto& obj : m_data) {
-    if (obj.get_type() == DataType::TEXT) {
-      m_generated.push_back(obj);
-    }
-    else {
-      m_generated.emplace_back(DataType::TEXT, m_generator.generate(obj.get_value()), obj.get_name());
     }
   }
 }
