@@ -7,6 +7,7 @@
 #include <RandGen.hpp>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <map>
 #include <set>
 
 class ParserJSON {
@@ -21,7 +22,9 @@ public:
   std::vector<DataObject> get_generated() const;
 
   std::string to_string() const;
-  void generate_to_file(int amount, const std::string& path);
+  void generate_to_file(int amount, const std::string& path, std::string& solution_path);
+
+  bool has_solutions() const;
 
 private:
   int current_variant;
@@ -37,9 +40,9 @@ private:
   std::vector<std::vector<std::shared_ptr<ConditionObject>>> m_conditions;
   std::vector<double> m_probabilities;
   std::set<double> m_cdf;
+  std::map<std::string, std::string> var_values;
 
   std::vector<DataObject> m_generated;
-  std::vector<DataObject> m_generated_solutions;
 
   int get_variant();
 

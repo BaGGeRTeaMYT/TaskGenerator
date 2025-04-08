@@ -6,3 +6,4 @@ main_out.txt
 imgui.ini
 *.tex
 *.json
+*.ipynb

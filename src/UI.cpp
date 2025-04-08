@@ -10,7 +10,7 @@ UIWindow::UIWindow() {
   screen.width = videoMode->width;
   screen.height = videoMode->height;
 
-  window = glfwCreateWindow(screen.width, screen.height, "Генератор задач", nullptr, nullptr);
+  window = glfwCreateWindow(screen.width / 3, screen.height / 5, "Генератор задач", nullptr, nullptr);
   if (window == nullptr) {
     glfwTerminate();
     throw std::runtime_error("Unable to create window");
@@ -36,6 +36,12 @@ UIWindow::UIWindow() {
 }
 
 void UIWindow::loop() {
+  if (!app_state.config_path.empty()) {
+    parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
+  }
+  if (!app_state.output_path.empty()) {
+    app_state.solution_path = app_state.output_path.substr(0, app_state.output_path.find_last_of('.')) + "_solution.ipynb";
+  }
   while (!glfwWindowShouldClose(window)) {
     glfwPollEvents();
 
@@ -71,8 +77,11 @@ void UIWindow::loop() {
       std::string path = select_json();
       if (!path.empty()) {
         app_state.config_path = path;
+        parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
       }
     }
+
+
     ImGui::SameLine();
     if (ImGui::Button("Редактировать config")) {
       open_file(app_state.config_path);
@@ -88,12 +97,25 @@ void UIWindow::loop() {
       std::string path = select_tex();
       if (!path.empty()) {
         app_state.output_path = path;
+        app_state.solution_path = app_state.output_path.substr(0, app_state.output_path.find_last_of('.')) + "_solution.ipynb";
       }
     }
-    
+
     ImGui::SameLine();
     if (ImGui::Button("Открыть файл")) {
       open_file(app_state.output_path);
+    }
+
+    if (parser && parser->has_solutions()) {
+      ImGui::Text("Ответы: %s", app_state.solution_path.c_str());
+      ImGui::SameLine();
+      if (ImGui::Button("Выбрать файл##2")) {
+        std::string path = select_ipynb();
+        if (!path.empty()) {
+          app_state.solution_path = path;
+        }
+      }
+
     }
 
     if (ImGui::Button("Сгенерировать")) {
@@ -107,8 +129,11 @@ void UIWindow::loop() {
       }
       else {
         try {
-          parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
-          parser->generate_to_file(app_state.variantCount, app_state.output_path);
+          parser->generate_to_file(
+            app_state.variantCount,
+            app_state.output_path,
+            app_state.solution_path
+          );
           app_state.msg = "Генерация успешно завершилась";
           app_state.holding_error_message = false;
         }
@@ -141,6 +166,11 @@ std::string UIWindow::select_json() {
 
 std::string UIWindow::select_tex() {
   const nfdfilteritem_t filter[] = { {"TEX", "tex"} };
+  return select_file(filter);
+}
+
+std::string UIWindow::select_ipynb() {
+  const nfdfilteritem_t filter[] = { {"IPYNB", "ipynb"} };
   return select_file(filter);
 }
 

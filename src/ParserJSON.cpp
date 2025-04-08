@@ -48,6 +48,19 @@ ParserJSON::ParserJSON(const std::string& path) {
     }
     m_cdf.insert(total_prob);
   }
+
+  bool met_task_with_solution = false;
+  bool met_task_without_solution = false;
+  for (const auto& sol : m_solutions) {
+    if (sol.empty()) {
+      met_task_without_solution = true;
+    } else {
+      met_task_with_solution = true;
+    }
+  }
+  if (!(met_task_with_solution ^ met_task_without_solution)) {
+    incorrect_format_error("атрибут \"solution\" должен быть в каждой задаче или не быть ни в одной.");
+  }
 }
 
 std::vector<std::vector<DataObject>> ParserJSON::get_data() const { return m_data; }
@@ -64,8 +77,9 @@ std::string ParserJSON::to_string() const {
   return res;
 }
 
-void ParserJSON::generate_to_file(int amount, const std::string& path) {
+void ParserJSON::generate_to_file(int amount, const std::string& path, std::string& solution_path) {
   std::ofstream output(path);
+
   output.clear();
   output <<
     R"(\documentclass[11pt]{article}
@@ -79,18 +93,105 @@ void ParserJSON::generate_to_file(int amount, const std::string& path) {
 \begin{document}
 )";
 
+  json notebook;
+
+  if (has_solutions()) {
+    if (solution_path.empty()) {
+      int sep_pos = path.find_last_of('.');
+      solution_path = path.substr(0, sep_pos) + "_solution.ipynb";
+    }
+
+    notebook = {
+      {"cells", json::array()},
+      {"metadata", json::object()},
+      {"nbformat", 4},
+      {"nbformat_minor", 5}
+    };
+
+    json info_cell = {
+      {"cell_type", "markdown"},
+      {"metadata", json::object()},
+      {"source", json::array({
+        "# Решения задач\n"
+      })}
+    };
+    notebook["cells"].push_back(info_cell);
+    json imports_cell = {
+      {"cell_type", "code"},
+      {"metadata", json::object()},
+      {"execution_count", 0},
+      {"outputs", json::array()},
+      {"source", json::array({
+        "from sympy import linsolve, Matrix, S, Symbol, symbols, linear_eq_to_matrix,\\",
+        "Eq, zeros, latex",
+        "from IPython.display import Latex, Math"
+      })}
+    };
+    notebook["cells"].push_back(imports_cell);
+  }
+
   for (int i = 1; i <= amount; i++) {
     generate_values();
+    for (const auto& obj : m_generated) {
+      if (!obj.get_name().empty()) {
+        var_values[obj.get_name()] = obj.get_value();
+      }
+    }
+    std::string last_generated_task = to_string();
     output << "\n\\section*{Вариант "
       << i
       << "}\n";
-    output << to_string();
+    output << last_generated_task;
+    if (has_solutions()) {
+      json new_cell = {
+        {"cell_type", "markdown"},
+        {"metadata", json::object()},
+        {"source", json::array({
+          "## Вариант " + std::to_string(i) + "\n"
+          + last_generated_task
+        })}
+      };
+      notebook["cells"].push_back(new_cell);
+      new_cell = {
+        {"cell_type", "code"},
+        {"metadata", json::object()},
+        {"execution_count", 0},
+        {"outputs", json::array()},
+        {"source", json::array()}
+      };
+      std::string to_append = "";
+      for (const auto& sol : m_solutions[current_variant]) {
+        if (sol.get_type() == DataType::TEXT) {
+          to_append += sol.get_value();
+        }
+        else if (sol.get_type() == DataType::VAR) {
+          to_append += var_values[sol.get_value()];
+        }
+        else {
+          incorrect_format_error("объекты \"solution\" могут иметь только атрибуты \"type\" и \"value\"");
+        }
+      }
+      new_cell["source"].push_back(to_append);
+      notebook["cells"].push_back(new_cell);
+    }
   }
 
-  output <<
-    R"(
+  output << R"(
 \end{document}
 % generated with task generator)";
+
+  output.close();
+
+  if (has_solutions()) {
+    std::ofstream solution_out(solution_path);
+    solution_out.clear();
+    solution_out << notebook.dump(2);
+    solution_out.close();
+  }
+}
+
+bool ParserJSON::has_solutions() const {
+  return !m_solutions.back().empty();
 }
 
 void ParserJSON::parse_data(const json& json_data) {
@@ -153,7 +254,7 @@ void ParserJSON::parse_data(const json& json_data) {
       incorrect_format_error("объект \"solution\" должен быть массивом");
     }
     for (const auto& sol : json_data["solution"]) {
-
+      m_solutions.back().emplace_back(get_data_type(sol["type"]), sol["value"]);
     }
   }
 
