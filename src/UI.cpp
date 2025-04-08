@@ -32,7 +32,7 @@ UIWindow::UIWindow() {
   ImGui_ImplGlfw_InitForOpenGL(window, true);
   ImGui_ImplOpenGL3_Init("#version 130");
 
-  clear_color = glm::vec4(0.5, 0.5, 0.5, 1);
+  clear_color = glm::vec4(0.1, 0.1, 0.1, 1);
 }
 
 void UIWindow::loop() {
@@ -43,11 +43,31 @@ void UIWindow::loop() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::SetNextWindowSizeConstraints(
-      {400, 300},
-      {static_cast<float>(screen.width), static_cast<float>(screen.height)}
-    );
-    ImGui::Begin("Генератор задач");
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar |
+      ImGuiWindowFlags_NoCollapse |
+      ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove |
+      ImGuiWindowFlags_NoBringToFrontOnFocus |
+      ImGuiWindowFlags_NoNavFocus |
+      ImGuiWindowFlags_NoBackground;
+
+    // ImGui::SetNextWindowSizeConstraints(
+    //   {400, 300},
+    //   {static_cast<float>(screen.width), static_cast<float>(screen.height)}
+    // );
+
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(width, height));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+    ImGui::Begin("Генератор задач", nullptr, flags);
+    ImGui::PopStyleVar(3);
 
     ImGui::Text("Конфигурация: %s", app_state.config_path.c_str());
 
@@ -59,8 +79,7 @@ void UIWindow::loop() {
       }
     }
 
-    float width = std::max(100.f, ImGui::GetContentRegionAvail().x * 0.3f);
-    ImGui::SetNextItemWidth(width);
+    ImGui::SetNextItemWidth(200);
     ImGui::InputInt("Количество вариантов", &app_state.variantCount, 1, 10);
 
     ImGui::Text("Вывод: %s", app_state.output_path.c_str());
@@ -75,21 +94,24 @@ void UIWindow::loop() {
 
     if (ImGui::Button("Сгенерировать")) {
       if (app_state.config_path.empty()) {
-        app_state.error_msg = "Укажите путь к конфигу";
-      } else if (app_state.output_path.empty()) {
-        app_state.error_msg = "Укажите путь вывода программы";
-      } else {
+        app_state.msg = "Укажите путь к конфигу";
+      }
+      else if (app_state.output_path.empty()) {
+        app_state.msg = "Укажите путь вывода программы";
+      }
+      else {
         parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
         try {
           parser->generate_to_file(app_state.variantCount, app_state.output_path);
-          app_state.error_msg = "";
-        } catch(std::runtime_error e) {
-          app_state.error_msg = e.what();
+          app_state.msg = "Генерация успешно завершилась";
+        }
+        catch (std::runtime_error e) {
+          app_state.msg = e.what();
         }
       }
     }
 
-    ImGui::Text("%s", app_state.error_msg.c_str());
+    ImGui::Text("%s", app_state.msg.c_str());
 
     ImGui::End();
 

@@ -15,7 +15,7 @@
 struct AppState {
   std::string config_path = "";
   std::string output_path = "";
-  std::string error_msg  = "";
+  std::string msg  = "";
   int variantCount = 1;
   bool generatePressed = false;
 };
