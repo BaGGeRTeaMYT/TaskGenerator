@@ -8,7 +8,8 @@
 
 enum class DataType {
   TEXT,
-  REGEX
+  REGEX,
+  VAR
 };
 
 enum class ConditionType {
@@ -16,6 +17,7 @@ enum class ConditionType {
 };
 
 ConditionType get_condition_type(const std::string& str);
+DataType get_data_type(const std::string& str);
 
 struct DataObject {
   DataObject(DataType type, const std::string& value, const std::string& name = "");

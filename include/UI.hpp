@@ -11,13 +11,14 @@
 
 #include <ParserJSON.hpp>
 #include <algorithm>
+#include <cstdlib>
 
 struct AppState {
   std::string config_path = "";
   std::string output_path = "";
   std::string msg  = "";
   int variantCount = 1;
-  bool generatePressed = false;
+  bool holding_error_message = false;
 };
 
 struct Rectangle {
@@ -39,7 +40,8 @@ private:
 
   Rectangle screen;
 
-  std::string select_json();
-  std::string select_tex();
-  std::string select_file(const nfdfilteritem_t filter[]);
+  static std::string select_json();
+  static std::string select_tex();
+  static std::string select_file(const nfdfilteritem_t filter[]);
+  static void open_file(const std::string& path);
 };

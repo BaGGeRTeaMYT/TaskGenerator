@@ -8,6 +8,20 @@ ConditionType get_condition_type(const std::string& str) {
   throw std::runtime_error("Unknown condition type: " + str);
 }
 
+DataType get_data_type(const std::string& str) {
+  if (!str.compare("text")) {
+    return DataType::TEXT;
+  }
+  if (!str.compare("regex")) {
+    return DataType::REGEX;
+  }
+  if (!str.compare("var")) {
+    return DataType::VAR;
+  }
+
+  throw std::runtime_error("Unknown data type: " + str); 
+}
+
 DataObject::DataObject(
   DataType type,
   const std::string& value,

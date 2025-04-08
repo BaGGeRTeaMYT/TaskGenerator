@@ -18,3 +18,13 @@ private:
   std::string parse_character_class(const std::string& regex, size_t& pos);
   std::string parse_repetition(const std::string& regex, size_t& pos, const std::string& to_repeat);
 };
+
+class UniformNumberGenerator {
+public:
+  UniformNumberGenerator(double lhs = 0, double rhs = 1);
+
+  double get_num();
+private:
+  std::mt19937 rng;
+  std::uniform_real_distribution<double> dist;
+};

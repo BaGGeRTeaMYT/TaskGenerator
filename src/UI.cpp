@@ -54,11 +54,6 @@ void UIWindow::loop() {
       ImGuiWindowFlags_NoNavFocus |
       ImGuiWindowFlags_NoBackground;
 
-    // ImGui::SetNextWindowSizeConstraints(
-    //   {400, 300},
-    //   {static_cast<float>(screen.width), static_cast<float>(screen.height)}
-    // );
-
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(width, height));
 
@@ -78,6 +73,10 @@ void UIWindow::loop() {
         app_state.config_path = path;
       }
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Редактировать config")) {
+      open_file(app_state.config_path);
+    }
 
     ImGui::SetNextItemWidth(200);
     ImGui::InputInt("Количество вариантов", &app_state.variantCount, 1, 10);
@@ -91,27 +90,38 @@ void UIWindow::loop() {
         app_state.output_path = path;
       }
     }
+    
+    ImGui::SameLine();
+    if (ImGui::Button("Открыть файл")) {
+      open_file(app_state.output_path);
+    }
 
     if (ImGui::Button("Сгенерировать")) {
       if (app_state.config_path.empty()) {
         app_state.msg = "Укажите путь к конфигу";
+        app_state.holding_error_message = true;
       }
       else if (app_state.output_path.empty()) {
         app_state.msg = "Укажите путь вывода программы";
+        app_state.holding_error_message = true;
       }
       else {
-        parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
         try {
+          parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
           parser->generate_to_file(app_state.variantCount, app_state.output_path);
           app_state.msg = "Генерация успешно завершилась";
+          app_state.holding_error_message = false;
         }
         catch (std::runtime_error e) {
           app_state.msg = e.what();
+          app_state.holding_error_message = true;
         }
       }
     }
 
-    ImGui::Text("%s", app_state.msg.c_str());
+    ImVec4 message_color = (app_state.holding_error_message ? ImVec4(1, 0, 0, 1) : ImVec4(1, 1, 1, 1));
+
+    ImGui::TextColored(message_color, "%s", app_state.msg.c_str());
 
     ImGui::End();
 
@@ -146,4 +156,16 @@ std::string UIWindow::select_file(const nfdfilteritem_t filter[]) {
 
   NFD_Quit();
   return "";
+}
+
+void UIWindow::open_file(const std::string& filePath) {
+#ifdef _WIN32
+  std::string command = "start \"\" \"" + filePath + "\"";
+#elif __APPLE__
+  std::string command = "open \"" + filePath + "\"";
+#else // Linux
+  std::string command = "xdg-open \"" + filePath + "\"";
+#endif
+
+  std::system(command.c_str());
 }

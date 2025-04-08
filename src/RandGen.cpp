@@ -172,3 +172,12 @@ std::string RegexStringGenerator::parse_repetition(const std::string& regex, siz
   }
   return result;
 }
+
+UniformNumberGenerator::UniformNumberGenerator(double lhs, double rhs) :
+  rng(std::random_device{}()),
+  dist(std::uniform_real_distribution<double>(lhs, rhs)) {
+}
+
+double UniformNumberGenerator::get_num() {
+  return dist(rng);
+}
