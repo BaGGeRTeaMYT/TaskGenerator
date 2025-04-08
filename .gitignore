@@ -3,3 +3,5 @@ build
 .devcontainer
 test*
 main_out.txt
+imgui.ini
+*.tex
