@@ -8,7 +8,7 @@
 
 class ConditionChecker {
 public:
-  using CheckerFunction = std::function<bool(const std::vector<DataObject>& objects, const std::vector<std::string>& names)>;
+  using CheckerFunction = std::function<bool(const std::map<std::string, std::string>& var_values, const std::vector<std::string>& names)>;
 
   ConditionChecker();
 
@@ -16,6 +16,4 @@ public:
 
 private:
   std::map<ConditionType, CheckerFunction> checkers;
-  static bool form_plane(const std::vector<DataObject>& objects, const std::vector<std::string>& names);
-
 };

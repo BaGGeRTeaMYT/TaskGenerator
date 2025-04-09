@@ -13,7 +13,8 @@ enum class DataType {
 };
 
 enum class ConditionType {
-  FORM_PLANE
+  FORM_PLANE,
+  LESS
 };
 
 ConditionType get_condition_type(const std::string& str);

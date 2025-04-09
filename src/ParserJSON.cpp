@@ -54,7 +54,8 @@ ParserJSON::ParserJSON(const std::string& path) {
   for (const auto& sol : m_solutions) {
     if (sol.empty()) {
       met_task_without_solution = true;
-    } else {
+    }
+    else {
       met_task_with_solution = true;
     }
   }
@@ -132,11 +133,6 @@ void ParserJSON::generate_to_file(int amount, const std::string& path, std::stri
 
   for (int i = 1; i <= amount; i++) {
     generate_values();
-    for (const auto& obj : m_generated) {
-      if (!obj.get_name().empty()) {
-        var_values[obj.get_name()] = obj.get_value();
-      }
-    }
     std::string last_generated_task = to_string();
     output << "\n\\section*{Вариант "
       << i
@@ -281,13 +277,18 @@ void ParserJSON::generate_values(bool check) {
   }
 
   m_generated = {};
+  var_values = {};
 
   for (const auto& obj : m_data[current_variant]) {
     if (obj.get_type() == DataType::TEXT) {
       m_generated.push_back(obj);
     }
-    else {
+    else if (obj.get_type() == DataType::REGEX) {
       m_generated.emplace_back(DataType::TEXT, m_generator.generate(obj.get_value()), obj.get_name());
+      var_values[obj.get_name()] = m_generated.back().get_value();
+    }
+    else {
+      incorrect_format_error("объекты в \"data\" могут иметь только атрибуты типов \"text\" и \"regex\"");
     }
   }
 }
@@ -298,16 +299,16 @@ void ParserJSON::generate_with_condition() {
   while (!satisfied) {
     generate_values(false);
     bool total_results = true;
-    for (const auto& condition : m_conditions) {
+    for (const auto& condition : m_conditions[current_variant]) {
 
-      auto type = condition[current_variant]->get_type();
-      auto names = condition[current_variant]->get_names();
+      auto type = condition->get_type();
+      auto names = condition->get_names();
 
       std::vector<std::string> names_vec;
       for (const auto& name : names) {
         names_vec.push_back(name);
       }
-      total_results &= (*m_checker)[type](m_generated, names_vec);
+      total_results &= (*m_checker)[type](var_values, names_vec);
     }
     satisfied = total_results;
   }

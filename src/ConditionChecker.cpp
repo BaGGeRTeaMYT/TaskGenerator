@@ -1,39 +1,6 @@
 #include <ConditionChecker.hpp>
 
-ConditionChecker::ConditionChecker() {
-  checkers[ConditionType::FORM_PLANE] = form_plane;
-}
-
-Point3D get_point(const std::vector<DataObject>& objects, const std::vector<std::string>& names) {
-  if (names.size() != 3) {
-    std::string error_msg = "Can only construct point from 3 names (" + std::to_string(names.size()) + " given)";
-    throw std::runtime_error(error_msg);
-  }
-  std::array<std::string, 3> coords = {};
-  for (const auto& obj : objects) {
-    if (!obj.get_name().empty()) {
-      for (int i = 0; i < names.size(); i++) {
-        if (!obj.get_name().compare(names[i])) {
-          if (coords[i].size()) {
-            std::string error_msg = "Found second object with name " + obj.get_name();
-            throw std::runtime_error(error_msg);
-          }
-          coords[i] = obj.get_value();
-          break;
-        }
-      }
-    }
-  }
-  for (int i = 0; i < coords.size(); i++) {
-    if (coords[i].empty()) {
-      std::string error_msg = "Object with name \"" + names[i] + "\" not found"; 
-      throw std::runtime_error(error_msg);
-    }
-  }
-  return {coords[0], coords[1], coords[2]};
-}
-
-bool ConditionChecker::form_plane(const std::vector<DataObject>& objects, const std::vector<std::string>& names) {
+bool form_plane(const std::map<std::string, std::string>& var_values, const std::vector<std::string>& names) {
   if (names.size() != 9) {
     std::string error_msg = "Can only construct plane from 9 names (" + std::to_string(names.size()) + " given)";
     throw std::runtime_error(error_msg);
@@ -41,13 +8,33 @@ bool ConditionChecker::form_plane(const std::vector<DataObject>& objects, const 
   std::array<Point3D, 3> plane = {};
   for (int j = 0; j < plane.size(); j++) {
     int i = j*3;
-    plane[j] = get_point(objects, {names[i], names[i + 1], names[i + 2]});
+    plane[j] = {var_values.at(names[i]), var_values.at(names[i + 1]), var_values.at(names[i + 2])};
   }
   Vector3D first(plane[0], plane[1]);
   Vector3D second(plane[0], plane[2]);
   Vector3D cross_prod = first.cross_product(second);
 
   return cross_prod.length() > std::numeric_limits<double>::epsilon();
+}
+
+bool less(const std::map<std::string, std::string>& var_values, const std::vector<std::string>& names) {
+  if (names.size() != 2) {
+      throw std::runtime_error("\"less\" ожидает 2 аргумента, получено " + std::to_string(names.size()));
+  } 
+  std::array<double, 2> arr;
+  for (int i = 0; i < names.size(); i++) {
+    try {
+      arr[i] = std::stod(var_values.at(names[i]));
+    } catch (std::invalid_argument e) {
+      throw std::runtime_error(names[i] + ": " + var_values.at(names[i]) + " не получилось привести к числу");
+    }
+  }
+  return arr[0] < arr[1];
+}
+
+ConditionChecker::ConditionChecker() {
+  checkers[ConditionType::FORM_PLANE] = form_plane;
+  checkers[ConditionType::LESS] = less;
 }
 
 ConditionChecker::CheckerFunction ConditionChecker::operator[](ConditionType type) const {

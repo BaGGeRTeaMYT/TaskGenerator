@@ -4,6 +4,9 @@ ConditionType get_condition_type(const std::string& str) {
   if (!str.compare("form_plane")) {
     return ConditionType::FORM_PLANE;
   }
+  if (!str.compare("less")) {
+    return ConditionType::LESS;
+  }
 
   throw std::runtime_error("Unknown condition type: " + str);
 }
@@ -51,10 +54,20 @@ ConditionType ConditionObject::get_type() const { return type; }
 
 std::vector<std::string> ConditionObject::get_names() const { return names; }
 
+double to_num(const std::string& str) {
+  double val;
+  try {
+    val = std::stod(str);
+  } catch (std::invalid_argument e) {
+    throw std::runtime_error(str + " не получилось привести к числу");
+  }
+  return val;
+}
+
 Point3D::Point3D(const std::string& x_str, const std::string& y_str, const std::string& z_str) :
-  x(std::stod(x_str)),
-  y(std::stod(y_str)),
-  z(std::stod(z_str)) {
+  x(to_num(x_str)),
+  y(to_num(y_str)),
+  z(to_num(z_str)) {
 }
 
 Point3D::Point3D(const double x, const double y, const double z) :

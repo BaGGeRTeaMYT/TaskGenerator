@@ -12,6 +12,9 @@
 #include <ParserJSON.hpp>
 #include <algorithm>
 #include <cstdlib>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 struct AppState {
   std::string config_path = "";
@@ -20,6 +23,7 @@ struct AppState {
   std::string msg  = "";
   int variantCount = 1;
   bool holding_error_message = false;
+  bool need_to_generate = false;
 };
 
 struct Rectangle {
@@ -30,10 +34,17 @@ struct Rectangle {
 class UIWindow {
 public:
   UIWindow();
+  ~UIWindow();
 
   void loop();
 
 private:
+  std::thread generate_thread;
+  std::mutex generate_mutex;
+  std::atomic<bool> is_generating{false};
+  std::atomic<bool> generation_complete{false};
+  std::string generation_result;
+
   AppState app_state;
   GLFWwindow* window;
   glm::vec4 clear_color;
@@ -46,4 +57,6 @@ private:
   static std::string select_ipynb();
   static std::string select_file(const nfdfilteritem_t filter[]);
   static void open_file(const std::string& path);
+  void generate();
+  void generate_thread_wrapper();
 };
