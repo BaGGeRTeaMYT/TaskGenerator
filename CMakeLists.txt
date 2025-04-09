@@ -35,7 +35,7 @@ add_compile_definitions(PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
 include_directories(include)
 
-add_executable(MAIN main.cpp ${SOURCES} src/UI.cpp)
+add_executable(MAIN main.cpp ${SOURCES})
 
 target_link_libraries(MAIN PRIVATE
     nlohmann_json::nlohmann_json
