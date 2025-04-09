@@ -24,10 +24,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json)
 FetchContent_MakeAvailable(imgui-glfw-glad-glm)
-find_package(OpenGL REQUIRED)
 FetchContent_MakeAvailable(nfd)
 
-
+if(UNIX)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(OpenGL REQUIRED opengl)
+else()
+    find_package(OpenGL REQUIRED)
+endif()
 
 file (GLOB SOURCES "src/*.cpp")
 
@@ -41,5 +45,5 @@ target_link_libraries(MAIN PRIVATE
     nlohmann_json::nlohmann_json
     imgui
     glm
-    opengl32
+    OpenGL::GL
     nfd)
