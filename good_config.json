@@ -1,0 +1,367 @@
+{
+  "data":
+  [
+    {
+      "type": "text",
+      "value": "Даны точки A("
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "A1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "A2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "A3"
+    },
+    {
+      "type": "text",
+      "value": "), B("
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "B1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "B2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "B3"
+    },
+    {
+      "type": "text",
+      "value": "), C("
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "C1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "C2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "C3"
+    },
+    {
+      "type": "text",
+      "value": "), M("
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "M1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "M2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "M3"
+    },
+    {
+      "type": "text",
+      "value": "), K("
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "K1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "K2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "K3"
+    },
+    {
+      "type": "text",
+      "value": "), P("
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "P1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "P2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "regex",
+      "value": "\\-?[1-2]?[0-9]",
+      "name": "P3"
+    },
+    {
+      "type": "text",
+      "value": ")\n\n"
+    },
+    {
+      "type": "text",
+      "value": "Составить уравнение плоскостей $ABC$ и $MKP$, найти линию пересечения плоскостей или установить их параллельность.\\\\\nСоставить систему параметрических уравнений прямых $MK$ и $CN$, прямая $CN$ перпендикулярна плоскости $ABC$. Найти точку пересечения $MK$ и $CN$.\n"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "form_plane",
+      "names": [
+        "A1", "A2", "A3", 
+        "B1", "B2", "B3", 
+        "C1", "C2", "C3"
+      ]
+    },
+    {
+      "type": "form_plane",
+      "names": [
+        "M1", "M2", "M3", 
+        "K1", "K2", "K3", 
+        "P1", "P2", "P3"
+      ]
+    }
+  ],
+  "solution": [
+    {
+      "type": "text",
+      "value": "A = Matrix(["
+    },
+    {
+      "type": "var",
+      "value": "A1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "A2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "A3"
+    },
+    {
+      "type": "text",
+      "value": "])\n"
+    },
+    {
+      "type": "text",
+      "value": "B = Matrix(["
+    },
+    {
+      "type": "var",
+      "value": "B1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "B2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "B3"
+    },
+    {
+      "type": "text",
+      "value": "])\n"
+    },
+    {
+      "type": "text",
+      "value": "C = Matrix(["
+    },
+    {
+      "type": "var",
+      "value": "C1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "C2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "C3"
+    },
+    {
+      "type": "text",
+      "value": "])\n"
+    },
+    {
+      "type": "text",
+      "value": "M = Matrix(["
+    },
+    {
+      "type": "var",
+      "value": "M1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "M2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "M3"
+    },
+    {
+      "type": "text",
+      "value": "])\n"
+    },
+    {
+      "type": "text",
+      "value": "K = Matrix(["
+    },
+    {
+      "type": "var",
+      "value": "K1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "K2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "K3"
+    },
+    {
+      "type": "text",
+      "value": "])\n"
+    },
+    {
+      "type": "text",
+      "value": "P = Matrix(["
+    },
+    {
+      "type": "var",
+      "value": "P1"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "P2"
+    },
+    {
+      "type": "text",
+      "value": ", "
+    },
+    {
+      "type": "var",
+      "value": "P3"
+    },
+    {
+      "type": "text",
+      "value": "])\n"
+    },
+    {
+      "type": "text",
+      "value": "x, y, z, t = symbols('x y z t')\nX = Matrix([x, y, z])\nplane_ABC = (Eq(Matrix([(Point - A).T for Point in (X, B, C)]).det(), 0))\nplane_MKP = (Eq(Matrix([(Point - M).T for Point in (X, K, P)]).det(), 0))\ndisplay(Math(fr'\\text{{Плоскость ABC: }} {latex(plane_ABC)}'))\ndisplay(Math(fr'\\text{{Плоскость MKP: }} {latex(plane_MKP)}'))\n\nplanes_intersection = linsolve([plane_ABC, plane_MKP], x, y, z)\nif (len(planes_intersection)):\n    display(planes_intersection)\nelse:\n    display(Math(fr'\\text{{Плоскости параллельны}}'))\n\nMK_vector = K - M\nMK = M + t*MK_vector\ndisplay(Math(fr'\\text{{ Уравнение прямой }} MK\\ {latex(Eq(X, MK, evaluate=False))}'))\nMK_sys = [Eq(X[i], MK[i]) for i in range(len(MK))]\ndisplay(Math(fr'\\text{{Параметрические уравнения прямой }} MK\\ {latex(MK_sys)}'))\nu = Symbol('u')\nABC_equation = plane_ABC.lhs.expand()\nA_coeff = ABC_equation.coeff(x)\nB_coeff = ABC_equation.coeff(y)\nC_coeff = ABC_equation.coeff(z)\nCN_vector = Matrix([A_coeff, B_coeff, C_coeff])\nCN = C + u*CN_vector\ndisplay(Math(fr'\\text{{ Уравнение прямой }} CN\\ {latex(Eq(X, CN, evaluate=False))}'))\nCN_sys = [Eq(X[i], CN[i]) for i in range(len(CN))]\ndisplay(Math(fr'\\text{{Параметрические уравнения прямой }} CN\\ {latex(CN_sys)}'))\n\nlines_intersection = linsolve([Eq(MK[i], CN[i]) for i in range(len(CN))], t, u)\ndisplay(Math(fr'\\text{{Точка пересечения MK и CN: }} {latex(Matrix(*lines_intersection))}'))"
+    }
+  ]
+}
