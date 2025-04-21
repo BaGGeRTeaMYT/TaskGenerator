@@ -99,7 +99,12 @@ void UIWindow::loop() {
       std::string path = select_json();
       if (!path.empty()) {
         app_state.config_path = path;
-        parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
+        try {
+          parser = std::make_shared<ParserJSON>(ParserJSON(app_state.config_path));
+        } catch (std::runtime_error e) {
+          app_state.holding_error_message = true;
+          app_state.msg = e.what();
+        }
       }
     }
     
@@ -221,11 +226,17 @@ void UIWindow::generate() {
   if (app_state.config_path.empty()) {
     generation_result = "Укажите путь к конфигу";
     app_state.holding_error_message = true;
+    is_generating = false;
+    app_state.need_to_generate = false;
+    generation_complete = true;
     return;
   }
   else if (app_state.output_path.empty()) {
-    generation_result = "Укажите путь вывода программы";
+    generation_result = "Укажите путь для вывода программы";
     app_state.holding_error_message = true;
+    is_generating = false;
+    app_state.need_to_generate = false;
+    generation_complete = true;
     return;
   }
   else {

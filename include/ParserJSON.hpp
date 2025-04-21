@@ -49,3 +49,4 @@ private:
   void generate_with_condition();
   void incorrect_format_error(const std::string& what) const;
 };
+

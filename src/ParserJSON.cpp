@@ -11,7 +11,11 @@ ParserJSON::ParserJSON(const std::string& path) {
   }
 
   json json_data;
-  file >> json_data;
+  try {
+    file >> json_data;
+  } catch (...) {
+    incorrect_format_error("некорректный JSON файл");
+  }
 
   if (json_data.contains("tasks")) {
     if (!json_data["tasks"].is_array()) {
@@ -263,6 +267,9 @@ void ParserJSON::parse_data(const json& json_data) {
       incorrect_format_error("объект \"solution\" должен быть массивом");
     }
     for (const auto& sol : json_data["solution"]) {
+      if (!sol.is_object() || !sol.contains("type") || !sol.contains("value")) {
+        continue;
+      }
       m_solutions.back().emplace_back(get_data_type(sol["type"]), sol["value"]);
     }
   }

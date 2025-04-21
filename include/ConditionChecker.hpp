@@ -8,7 +8,10 @@
 
 class ConditionChecker {
 public:
-  using CheckerFunction = std::function<bool(const std::map<std::string, std::string>& var_values, const std::vector<std::string>& names)>;
+  using CheckerFunction = std::function<bool(
+                            const std::map<std::string, std::string>& var_values,
+                            const std::vector<std::string>& names
+                          )>;
 
   ConditionChecker();
 
