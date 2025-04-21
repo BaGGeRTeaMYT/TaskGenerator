@@ -2,7 +2,7 @@
 
 UIWindow::UIWindow() {
   if (!glfwInit()) {
-    throw std::runtime_error("Unable to initialize glfw");
+    throw std::runtime_error("Fatal: не удалось инициализировать glfw");
   }
 
   auto* monitor = glfwGetPrimaryMonitor();
@@ -11,9 +11,10 @@ UIWindow::UIWindow() {
   screen.height = videoMode->height;
 
   window = glfwCreateWindow(screen.width / 2, screen.height / 3, "Генератор задач", nullptr, nullptr);
+  
   if (window == nullptr) {
     glfwTerminate();
-    throw std::runtime_error("Unable to create window");
+    throw std::runtime_error("Fatal: не удалось создать окно");
   }
 
   glfwMakeContextCurrent(window);
@@ -22,6 +23,7 @@ UIWindow::UIWindow() {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO(); (void)io;
+  io.IniFilename = nullptr;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
   // TODO: Add Linux support

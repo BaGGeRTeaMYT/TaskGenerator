@@ -1,5 +1,9 @@
 #include <RandGen.hpp>
 
+void regex_error(const std::string& str) {
+  throw std::runtime_error("Regex: " + str);
+}
+
 RegexStringGenerator::RegexStringGenerator() : rng(std::random_device{}()) {}
 
 std::string RegexStringGenerator::generate(const std::string& regex) {
@@ -18,7 +22,9 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
     char c = regex[pos];
 
     if (c == '\\') {
-      if (pos + 1 >= regex.size()) throw std::runtime_error("Invalid escape sequence");
+      if (pos + 1 >= regex.size()) {
+        regex_error("выражение не должно заканчиваться символом экранирования");
+      }
       result += regex[pos + 1];
       pos += 2;
     }
@@ -35,7 +41,9 @@ std::string RegexStringGenerator::parse_expression(const std::string& regex, siz
       }
     }
     else if (c == '{') {
-      if (result.empty()) throw std::runtime_error("Nothing to repeat before {}");
+      if (result.empty()) {
+        regex_error("нет операнда для оператора {}");
+      }
 
       size_t pattern_start = pos - 1;
       std::string to_repeat = regex.substr(pattern_start, 1);
@@ -77,7 +85,9 @@ std::string RegexStringGenerator::parse_character_class(const std::string& regex
     char c = regex[pos];
 
     if (c == '\\') {
-      if (pos + 1 >= regex.size()) throw std::runtime_error("Invalid escape sequence in character class");
+      if (pos + 1 >= regex.size()) {
+        regex_error("символ экранирования внутри перечисления символов");
+      }
       chars += regex[pos + 1];
       pos += 2;
     }
@@ -103,7 +113,7 @@ std::string RegexStringGenerator::parse_character_class(const std::string& regex
   }
 
   if (pos >= regex.size() || regex[pos] != ']') {
-    throw std::runtime_error("Unclosed character class");
+    regex_error("незакрытая квадратная скобка");
   }
   pos++;
 
@@ -125,7 +135,9 @@ std::string RegexStringGenerator::parse_repetition(const std::string& regex, siz
     char c = regex[pos];
 
     if (c == '-') {
-      if (in_range || num_str.empty()) throw std::runtime_error("Invalid repetition range");
+      if (in_range || num_str.empty()) {
+        regex_error("некорректный аргумент внутри {}");
+      }
       in_range = true;
       min_repeat = std::stoi(num_str);
       num_str.clear();
@@ -136,12 +148,12 @@ std::string RegexStringGenerator::parse_repetition(const std::string& regex, siz
       pos++;
     }
     else {
-      throw std::runtime_error("Invalid character in repetition");
+      regex_error("нечисловой символ внутри {}");
     }
   }
 
   if (pos >= regex.size() || regex[pos] != '}') {
-    throw std::runtime_error("Unclosed repetition");
+    regex_error("незакрытая фигурная скобка");
   }
   pos++;
 

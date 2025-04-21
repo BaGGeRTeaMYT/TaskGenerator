@@ -1,9 +1,12 @@
 #include <ConditionChecker.hpp>
 
+void condition_error(const std::string& str) {
+  throw std::runtime_error("Condition: " + str);
+}
+
 bool form_plane(const std::map<std::string, std::string>& var_values, const std::vector<std::string>& names) {
   if (names.size() != 9) {
-    std::string error_msg = "Can only construct plane from 9 names (" + std::to_string(names.size()) + " given)";
-    throw std::runtime_error(error_msg);
+    condition_error("\"form_plane\" требует 9 аргументов, получено " + std::to_string(names.size()));
   }
   std::array<Point3D, 3> plane = {};
   for (int j = 0; j < plane.size(); j++) {
@@ -19,14 +22,14 @@ bool form_plane(const std::map<std::string, std::string>& var_values, const std:
 
 bool less(const std::map<std::string, std::string>& var_values, const std::vector<std::string>& names) {
   if (names.size() != 2) {
-      throw std::runtime_error("\"less\" ожидает 2 аргумента, получено " + std::to_string(names.size()));
+      condition_error("\"less\" ожидает 2 аргумента, получено " + std::to_string(names.size()));
   } 
   std::array<double, 2> arr;
   for (int i = 0; i < names.size(); i++) {
     try {
       arr[i] = std::stod(var_values.at(names[i]));
     } catch (std::invalid_argument e) {
-      throw std::runtime_error(names[i] + ": " + var_values.at(names[i]) + " не получилось привести к числу");
+      condition_error(names[i] + ": " + var_values.at(names[i]) + " не получилось привести к числу");
     }
   }
   return arr[0] < arr[1];
@@ -39,8 +42,5 @@ ConditionChecker::ConditionChecker() {
 
 ConditionChecker::CheckerFunction ConditionChecker::operator[](ConditionType type) const {
   auto iter = checkers.find(type);
-  if (iter == checkers.end()) {
-    throw std::runtime_error("Unknown condition type");
-  }
   return iter->second;
 }

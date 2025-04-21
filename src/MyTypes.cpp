@@ -1,5 +1,9 @@
 #include <MyTypes.hpp>
 
+void type_error(const std::string& str) {
+  throw std::runtime_error("Type: " + str);
+}
+
 ConditionType get_condition_type(const std::string& str) {
   if (!str.compare("form_plane")) {
     return ConditionType::FORM_PLANE;
@@ -8,7 +12,7 @@ ConditionType get_condition_type(const std::string& str) {
     return ConditionType::LESS;
   }
 
-  throw std::runtime_error("Unknown condition type: " + str);
+  type_error("неизвестный тип условия " + str);
 }
 
 DataType get_data_type(const std::string& str) {
@@ -22,7 +26,7 @@ DataType get_data_type(const std::string& str) {
     return DataType::VAR;
   }
 
-  throw std::runtime_error("Unknown data type: " + str); 
+  type_error("неизвестный тип данных: " + str); 
 }
 
 DataObject::DataObject(
@@ -59,7 +63,7 @@ double to_num(const std::string& str) {
   try {
     val = std::stod(str);
   } catch (std::invalid_argument e) {
-    throw std::runtime_error(str + " не получилось привести к числу");
+    throw std::runtime_error("Condition: " + str + " не получилось привести к числу");
   }
   return val;
 }

@@ -1,9 +1,13 @@
 #include <ParserJSON.hpp>
 
+void file_error(const std::string& str) {
+  throw std::runtime_error("File: " + str);
+}
+
 ParserJSON::ParserJSON(const std::string& path) {
   std::ifstream file(path);
   if (!file.is_open()) {
-    throw std::runtime_error("Не удалось открыть файл: " + path);
+    file_error("не удалось открыть файл " + path);
   }
 
   json json_data;
@@ -80,6 +84,10 @@ std::string ParserJSON::to_string() const {
 
 void ParserJSON::generate_to_file(int amount, const std::string& path, std::string& solution_path) {
   std::ofstream output(path);
+
+  if (!output.is_open()) {
+    file_error("не удалось открыть файл " + path);
+  }
 
   output.clear();
   output <<
@@ -180,6 +188,11 @@ void ParserJSON::generate_to_file(int amount, const std::string& path, std::stri
 
   if (has_solutions()) {
     std::ofstream solution_out(solution_path);
+
+    if (!solution_out.is_open()) {
+      file_error("не удалось открыть файл " + solution_path);
+    }
+
     solution_out.clear();
     solution_out << notebook.dump(2);
     solution_out.close();
@@ -315,7 +328,7 @@ void ParserJSON::generate_with_condition() {
 }
 
 void ParserJSON::incorrect_format_error(const std::string& what) const {
-  throw std::runtime_error("Некорректный формат файла конфигурации: " + what);
+  throw std::runtime_error("Config format: " + what);
 }
 
 int ParserJSON::get_variant() {
